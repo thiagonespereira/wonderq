@@ -28,6 +28,18 @@ npm install
 docker-compose up
 ```
 
+- Stop the containers
+
+```
+docker-compose down
+```
+
+- Remove the containers (this will recreate the database from scratch next time you run the containers)
+
+```
+docker-compose down -v
+```
+
 Local database can be accessed using these credentials:
 
 ```
