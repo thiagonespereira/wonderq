@@ -83,6 +83,15 @@ functions:
     reservedConcurrency: 1
     tags:
       WONDERQ: ${self:custom.environments.ssm_env}
+  check_message_timeout:
+    handler: app/handlers/check_message_timeout_handler.handler
+    timeout: 300
+    reservedConcurrency: 1
+    events:
+      - schedule:
+          rate: rate(1 minute)
+    tags:
+      WONDERQ: ${self:custom.environments.ssm_env}
   web:
     handler: app/handlers/serverless_handler.handler
     timeout: 30

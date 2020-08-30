@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "sls offline --host 0.0.0.0 --corsAllowOrigin localhost -s dev --httpPort 3002 --lambdaPort 3456",
+    "start:check_message_timeout": "sls invoke local -s dev -f check_message_timeout",
     "migrations": "sls invoke local -s dev -f run_migrations",
     "lint": "eslint . --ext .js",
     "test": "test"
@@ -43,8 +44,6 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-promise-router": "^4.0.1",
-    "express-validator": "^6.6.0",
     "joi": "^14.3.1",
     "knex": "^0.21.1",
     "moment": "^2.27.0",

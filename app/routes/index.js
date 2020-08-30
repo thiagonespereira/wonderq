@@ -2,8 +2,13 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
 const Logger = require('../utils/logger');
-const ForbiddenError = require('../utils/errors/forbidden-error');
-const UnauthorizedError = require('../utils/errors/unauthorized-error');
+
+const {
+    Ping,
+    Produce,
+    Consume,
+    Process,
+} = require('./message_functions');
 
 const app = express();
 
@@ -24,16 +29,22 @@ app.use(async (request, response, next) => {
 
 app.use(async (req, res, next) => {
     if (!req.body.apiKey) {
+        Logger.info('Request made with no API key.');
         res.status(403);
-        res.send('No api key.');
-        throw new ForbiddenError('No api key.');
+        return res.send('No api key.');
     }
-    if (req.body.apiKey !== process.env.SERVICE_AUTH_KEY) throw new UnauthorizedError('Invalid api key.');
-    next();
+    if (req.body.apiKey !== process.env.SERVICE_AUTH_KEY) {
+        Logger.info('Request made with invalid API key.');
+        res.status(401);
+        return res.send('Invalid api key.');
+    }
+
+    return next();
 });
 
-app.get('/ping', (req, res) => res.send('pong'));
-
-app.use('/messages', require('./messages'));
+app.post('/ping', Ping);
+app.post('/produce', Produce);
+app.post('/consume', Consume);
+app.post('/process/:id', Process);
 
 module.exports = app;

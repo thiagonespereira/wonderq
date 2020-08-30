@@ -1,4 +1,3 @@
-// const assert = require('assert')
 const Joi = require('joi');
 
 module.exports = class Message {
@@ -13,8 +12,10 @@ module.exports = class Message {
 
     static schema() {
         return Joi.object().keys({
-            numId: Joi.number().allow(null),
+            id: Joi.number().allow(null),
             message: Joi.string().required(),
+            reserved: Joi.boolean().default(false),
+            processed: Joi.boolean().default(false),
             createdAt: Joi.date(),
             updatedAt: Joi.date().allow(null),
         });
