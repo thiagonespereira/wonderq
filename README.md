@@ -74,9 +74,14 @@ Request body:
 }
 ```
 
-### /process/<messageId>
+### /process/*messageId*
 
 Endpoint used to get and consume the first message on the queue. Requires API key to be completed.
+
+Request parameter (on URL):
+```
+messageId
+```
 
 Request body:
 ```
