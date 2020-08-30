@@ -51,12 +51,7 @@ custom:
       DB_DATABASE: dev
       DB_USERNAME: dev
       DB_PASSWORD: dev
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      PASSWORD_KEY: dev
       LOG_LEVEL: silly
-      EMAIL_FROM_ADDRESS: tlpereir@gmail.com
-      FRONTEND_URL: http://localhost:2400
     aws:
       STAGE: ${self:provider.stage}
       DB_DRIVER: pg
@@ -64,17 +59,10 @@ custom:
         Fn::GetAtt: [Database, Endpoint.Address]
       DB_PORT:
         Fn::GetAtt: [Database, Endpoint.Port]
-      DB_DATABASE: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_DB_DATABASE~true}
-      DB_USERNAME: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_DB_USERNAME~true}
-      DB_PASSWORD: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_DB_PASSWORD~true}
-      REDIS_HOST:
-        Fn::GetAtt: [MemoryDatabase, RedisEndpoint.Address]
-      REDIS_PORT:
-        Fn::GetAtt: [MemoryDatabase, RedisEndpoint.Port]
-      PASSWORD_KEY: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_PASSWORD_KEY~true}
-      LOG_LEVEL: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_LOG_LEVEL~true}
-      EMAIL_FROM_ADDRESS: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_EMAIL_FROM_ADDRESS~true}
-      FRONTEND_URL: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_FRONTEND_URL~true}
+      DB_DATABASE: wonderq
+      DB_USERNAME: wonderq
+      DB_PASSWORD: wonderq
+      LOG_LEVEL: silly
 
 functions:
   run_migrations:
