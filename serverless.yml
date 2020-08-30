@@ -54,9 +54,9 @@ custom:
         Fn::GetAtt: [Database, Endpoint.Address]
       DB_PORT:
         Fn::GetAtt: [Database, Endpoint.Port]
-      DB_DATABASE: wonderq
-      DB_USERNAME: wonderq
-      DB_PASSWORD: wonderq
+      DB_DATABASE: wonderq123
+      DB_USERNAME: wonderq123
+      DB_PASSWORD: wonderq123
       LOG_LEVEL: silly
 
 functions:
