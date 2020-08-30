@@ -14,7 +14,7 @@ provider:
       - "Fn::GetAtt": LambdaSecurityGroup.GroupId
   SubnetIds:
     - subnet-0e4a9cc4ed67e4429
-    - subnet-00e507131b5223a1c
+    - subnet-039ceb32944173cc5
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:custom.environments.${self:custom.environments.env}.STAGE}
@@ -135,7 +135,7 @@ resources:
         DBSubnetGroupDescription: PublicDbSubnet
         SubnetIds:
           - subnet-0e4a9cc4ed67e4429
-          - subnet-00e507131b5223a1c
+          - subnet-039ceb32944173cc5
     LambdaRolePolicy:
       Type: AWS::IAM::Role
       Properties:
