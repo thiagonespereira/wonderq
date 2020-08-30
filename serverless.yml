@@ -1,0 +1,215 @@
+service: wonderq-backend
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  runtime: nodejs12.x
+  region: us-east-1
+  role:
+    Fn::GetAtt: [LambdaRolePolicy, Arn]
+  deploymentBucket:
+    name: wonderq-deploy-versions
+  # vpc:
+  #   securityGroupIds:
+  #     - "Fn::GetAtt": LambdaSecurityGroup.GroupId
+  # SubnetIds:
+  #   - subnet-9dbb57bc
+  #   - subnet-ae0fb9e3
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${self:custom.environments.${self:custom.environments.env}.STAGE}
+    DB_DRIVER: ${self:custom.environments.${self:custom.environments.env}.DB_DRIVER}
+    DB_HOST: ${self:custom.environments.${self:custom.environments.env}.DB_HOST}
+    DB_PORT: ${self:custom.environments.${self:custom.environments.env}.DB_PORT}
+    DB_DATABASE: ${self:custom.environments.${self:custom.environments.env}.DB_DATABASE}
+    DB_USERNAME: ${self:custom.environments.${self:custom.environments.env}.DB_USERNAME}
+    DB_PASSWORD: ${self:custom.environments.${self:custom.environments.env}.DB_PASSWORD}
+    REDIS_HOST: ${self:custom.environments.${self:custom.environments.env}.REDIS_HOST}
+    REDIS_PORT: ${self:custom.environments.${self:custom.environments.env}.REDIS_PORT}
+    PASSWORD_KEY: ${self:custom.environments.${self:custom.environments.env}.PASSWORD_KEY}
+    LOG_LEVEL: ${self:custom.environments.${self:custom.environments.env}.LOG_LEVEL}
+    EMAIL_FROM_ADDRESS: ${self:custom.environments.${self:custom.environments.env}.EMAIL_FROM_ADDRESS}
+    FRONTEND_URL: ${self:custom.environments.${self:custom.environments.env}.FRONTEND_URL}
+
+custom:
+  environments:
+    env: ${self:custom.environments.env_by_stage.${self:provider.stage}}
+    ssm_env: ${self:custom.environments.ssm_envs.${self:provider.stage}}
+    env_by_stage:
+      dev: local
+      prod: aws
+      stage: aws
+    ssm_envs:
+      dev: DEV
+      prod: PROD
+      stage: STAGE
+    local:
+      STAGE: ${self:provider.stage}
+      DB_DRIVER: pg
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: dev
+      DB_USERNAME: dev
+      DB_PASSWORD: dev
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PASSWORD_KEY: dev
+      LOG_LEVEL: silly
+      EMAIL_FROM_ADDRESS: tlpereir@gmail.com
+      FRONTEND_URL: http://localhost:2400
+    aws:
+      STAGE: ${self:provider.stage}
+      DB_DRIVER: pg
+      DB_HOST:
+        Fn::GetAtt: [Database, Endpoint.Address]
+      DB_PORT:
+        Fn::GetAtt: [Database, Endpoint.Port]
+      DB_DATABASE: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_DB_DATABASE~true}
+      DB_USERNAME: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_DB_USERNAME~true}
+      DB_PASSWORD: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_DB_PASSWORD~true}
+      REDIS_HOST:
+        Fn::GetAtt: [MemoryDatabase, RedisEndpoint.Address]
+      REDIS_PORT:
+        Fn::GetAtt: [MemoryDatabase, RedisEndpoint.Port]
+      PASSWORD_KEY: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_PASSWORD_KEY~true}
+      LOG_LEVEL: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_LOG_LEVEL~true}
+      EMAIL_FROM_ADDRESS: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_EMAIL_FROM_ADDRESS~true}
+      FRONTEND_URL: ${ssm:/WONDERQ_${self:custom.environments.ssm_env}_FRONTEND_URL~true}
+
+functions:
+  run_migrations:
+    handler: app/handlers/run_migrations_handler.handler
+    timeout: 300
+    reservedConcurrency: 1
+    tags:
+      WONDERQ: ${self:custom.environments.ssm_env}
+  web:
+    handler: app/handlers/serverless_handler.handler
+    timeout: 30
+    events:
+      - http:
+          method: any
+          path: /{proxy+}
+          cors: true
+    tags:
+      WONDERQ: ${self:custom.environments.ssm_env}
+
+resources:
+  Resources:
+    LambdaSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Security group for wonderq api service.
+    DatabaseSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      DependsOn: LambdaSecurityGroup
+      Properties:
+        GroupDescription: Security group for wonderq api databases.
+#         VpcId: vpc-07804086ac506a89c
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 5432
+            ToPort: 5432
+            CidrIp: 0.0.0.0/0
+          - IpProtocol: tcp
+            FromPort: 6379
+            ToPort: 6379
+            SourceSecurityGroupId:
+              "Fn::GetAtt": LambdaSecurityGroup.GroupId
+    Database:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBName: ${self:provider.environment.DB_DATABASE}
+        DBInstanceIdentifier: ${self:service}-${self:provider.stage}
+        DBInstanceClass: db.t2.micro
+        DeletionProtection: true
+        Engine: postgres
+        EngineVersion: 10.11
+        AllowMajorVersionUpgrade: true
+        MultiAZ: false
+        AllocatedStorage: 20
+        MasterUsername: ${self:provider.environment.DB_USERNAME}
+        MasterUserPassword: ${self:provider.environment.DB_PASSWORD}
+        PubliclyAccessible: true
+        DBSubnetGroupName:
+          Ref: DBSubnetGroup
+        VPCSecurityGroups:
+          - "Fn::GetAtt": DatabaseSecurityGroup.GroupId
+    DBSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupName: PublicDbSubnet
+        DBSubnetGroupDescription: PublicDbSubnet
+        SubnetIds:
+          - subnet-9dbb57bc
+          - subnet-ae0fb9e3
+    MemoryDatabase:
+      Type: AWS::ElastiCache::CacheCluster
+      Properties:
+        ClusterName: ${self:service}-${self:provider.stage}
+        CacheNodeType: cache.t2.micro
+        NumCacheNodes: 1
+        Engine: redis
+        EngineVersion: 3.2.10
+        CacheSubnetGroupName:
+          Ref: CacheSubnetGroup
+        VpcSecurityGroupIds:
+          - "Fn::GetAtt": DatabaseSecurityGroup.GroupId
+    CacheSubnetGroup:
+      Type: AWS::ElastiCache::SubnetGroup
+      Properties:
+        CacheSubnetGroupName: PrivateCacheSubnet
+        Description: PrivateCacheSubnet
+        SubnetIds:
+          - subnet-9dbb57bc
+          - subnet-ae0fb9e3
+    LambdaRolePolicy:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: wonderq-api-lambda-role-${opt:stage}
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: wonderq-api-cloudwatch-policy-${opt:stage}
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Resource: '*'
+                  Action:
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+          - PolicyName: wonderq-api-network-policy-${opt:stage}
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ec2:CreateNetworkInterface
+                    - ec2:DescribeNetworkInterfaces
+                    - ec2:DetachNetworkInterface
+                    - ec2:DeleteNetworkInterface
+                  Resource: '*'
+          - PolicyName: wonderq-api-email-policy-${opt:stage}
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ses:SendEmail
+                  Resource: '*'
+          - PolicyName: wonderq-api-sms-policy-${opt:stage}
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - SNS:Publish
+                  Resource: '*'
+
+plugins:
+  - serverless-offline
+  - serverless-offline-scheduler
+  - serverless-dotenv-plugin
