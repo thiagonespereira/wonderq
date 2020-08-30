@@ -9,9 +9,9 @@ provider:
     Fn::GetAtt: [LambdaRolePolicy, Arn]
   deploymentBucket:
     name: wonderq-deploy-versions
-  # vpc:
-  #   securityGroupIds:
-  #     - "Fn::GetAtt": LambdaSecurityGroup.GroupId
+  vpc:
+    securityGroupIds:
+      - "Fn::GetAtt": LambdaSecurityGroup.GroupId
   # SubnetIds:
   #   - subnet-9dbb57bc
   #   - subnet-ae0fb9e3
@@ -24,12 +24,7 @@ provider:
     DB_DATABASE: ${self:custom.environments.${self:custom.environments.env}.DB_DATABASE}
     DB_USERNAME: ${self:custom.environments.${self:custom.environments.env}.DB_USERNAME}
     DB_PASSWORD: ${self:custom.environments.${self:custom.environments.env}.DB_PASSWORD}
-    REDIS_HOST: ${self:custom.environments.${self:custom.environments.env}.REDIS_HOST}
-    REDIS_PORT: ${self:custom.environments.${self:custom.environments.env}.REDIS_PORT}
-    PASSWORD_KEY: ${self:custom.environments.${self:custom.environments.env}.PASSWORD_KEY}
     LOG_LEVEL: ${self:custom.environments.${self:custom.environments.env}.LOG_LEVEL}
-    EMAIL_FROM_ADDRESS: ${self:custom.environments.${self:custom.environments.env}.EMAIL_FROM_ADDRESS}
-    FRONTEND_URL: ${self:custom.environments.${self:custom.environments.env}.FRONTEND_URL}
 
 custom:
   environments:
@@ -97,12 +92,13 @@ resources:
       Type: AWS::EC2::SecurityGroup
       Properties:
         GroupDescription: Security group for wonderq api service.
+        VpcId: vpc-0c00013d888e55127
     DatabaseSecurityGroup:
       Type: AWS::EC2::SecurityGroup
       DependsOn: LambdaSecurityGroup
       Properties:
         GroupDescription: Security group for wonderq api databases.
-#         VpcId: vpc-07804086ac506a89c
+        VpcId: vpc-0c00013d888e55127
         SecurityGroupIngress:
           - IpProtocol: tcp
             FromPort: 5432
@@ -140,26 +136,6 @@ resources:
         SubnetIds:
           - subnet-9dbb57bc
           - subnet-ae0fb9e3
-    MemoryDatabase:
-      Type: AWS::ElastiCache::CacheCluster
-      Properties:
-        ClusterName: ${self:service}-${self:provider.stage}
-        CacheNodeType: cache.t2.micro
-        NumCacheNodes: 1
-        Engine: redis
-        EngineVersion: 3.2.10
-        CacheSubnetGroupName:
-          Ref: CacheSubnetGroup
-        VpcSecurityGroupIds:
-          - "Fn::GetAtt": DatabaseSecurityGroup.GroupId
-    CacheSubnetGroup:
-      Type: AWS::ElastiCache::SubnetGroup
-      Properties:
-        CacheSubnetGroupName: PrivateCacheSubnet
-        Description: PrivateCacheSubnet
-        SubnetIds:
-          - subnet-9dbb57bc
-          - subnet-ae0fb9e3
     LambdaRolePolicy:
       Type: AWS::IAM::Role
       Properties:
@@ -190,20 +166,6 @@ resources:
                     - ec2:DescribeNetworkInterfaces
                     - ec2:DetachNetworkInterface
                     - ec2:DeleteNetworkInterface
-                  Resource: '*'
-          - PolicyName: wonderq-api-email-policy-prod
-            PolicyDocument:
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - ses:SendEmail
-                  Resource: '*'
-          - PolicyName: wonderq-api-sms-policy-prod
-            PolicyDocument:
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - SNS:Publish
                   Resource: '*'
 
 plugins:
