@@ -27,5 +27,4 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: npm i
-      - run: sls deploy -s producction
+      - run: npx sls deploy -s prod
