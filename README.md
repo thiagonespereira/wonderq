@@ -83,7 +83,6 @@ Response body:
 Invalid api key.
 ```
 
-
 ### /produce
 
 Endpoint used to produce a new message on the queue. Requires API key to be completed.
@@ -96,6 +95,30 @@ Request body:
 }
 ```
 
+#### 200
+
+Response body:
+```
+{
+    "status": "ok",
+    "message": {
+        "id": 1,
+        "message": "Message text",
+        "reserved": false,
+        "processed": false,
+        "createdAt": "2020-08-30T23:40:17.396Z",
+        "updatedAt": null
+    }
+}
+```
+
+#### 400 Bad Request
+
+Response body:
+```
+No message information.
+```
+
 ### /consume
 
 Endpoint used to get and consume the first message on the queue. Requires API key to be completed.
@@ -105,6 +128,30 @@ Request body:
 {
     "apiKey": "SECRET"
 }
+```
+
+#### 200
+
+Response body:
+```
+{
+    "status": "ok",
+    "message": {
+        "reserved": true,
+        "updatedAt": "2020-08-30T23:41:02.331Z",
+        "id": 1,
+        "message": "Message text",
+        "processed": false,
+        "createdAt": "2020-08-30T23:40:17.396Z"
+    }
+}
+```
+
+#### 404 Not Found
+
+Response body:
+```
+No messages in queue.
 ```
 
 ### /process/*messageId*
@@ -121,6 +168,44 @@ Request body:
 {
     "apiKey": "SECRET"
 }
+```
+
+#### 200
+
+Response body:
+```
+{
+    "status": "ok",
+    "message": {
+        "processed": true,
+        "updatedAt": "2020-08-30T23:42:25.297Z",
+        "id": 1,
+        "message": "Message text",
+        "reserved": true,
+        "createdAt": "2020-08-30T23:40:17.396Z"
+    }
+}
+```
+
+#### 404 Not Found
+
+Response body:
+```
+No messages with this id.
+```
+
+#### 403 Forbidden
+
+Response body:
+```
+Message already processed.
+```
+
+#### 400 Bad Request
+
+Response body:
+```
+Message not reserved. Cannot be processed.
 ```
 
 ## Running the tests

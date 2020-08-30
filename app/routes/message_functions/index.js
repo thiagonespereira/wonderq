@@ -76,7 +76,7 @@ const Process = async (req, res) => {
 
         if (!message.reserved) {
             Logger.info('Message not reserved. Cannot be processed.');
-            res.status(403);
+            res.status(400);
             return res.send('Message not reserved. Cannot be processed.');
         }
 
