@@ -11,7 +11,7 @@ describe('/produce endpoint', () => {
                 apiKey: 'SECRET',
             });
 
-        expect(res.status).toEqual(403);
+        expect(res.status).toEqual(400);
         expect(res.text).toEqual('No message information.');
     });
 });
