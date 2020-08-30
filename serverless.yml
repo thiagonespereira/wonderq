@@ -25,6 +25,7 @@ provider:
     DB_USERNAME: ${self:custom.environments.${self:custom.environments.env}.DB_USERNAME}
     DB_PASSWORD: ${self:custom.environments.${self:custom.environments.env}.DB_PASSWORD}
     LOG_LEVEL: ${self:custom.environments.${self:custom.environments.env}.LOG_LEVEL}
+    SERVICE_AUTH_KEY: ${self:custom.environments.${self:custom.environments.env}.SERVICE_AUTH_KEY}
 
 custom:
   environments:
@@ -47,6 +48,7 @@ custom:
       DB_USERNAME: dev
       DB_PASSWORD: dev
       LOG_LEVEL: silly
+      SERVICE_AUTH_KEY: SECRET
     aws:
       STAGE: ${self:provider.stage}
       DB_DRIVER: pg
@@ -58,6 +60,7 @@ custom:
       DB_USERNAME: wonderq123
       DB_PASSWORD: wonderq123
       LOG_LEVEL: silly
+      SERVICE_AUTH_KEY: BIGGESTSECRET
 
 functions:
   run_migrations:
