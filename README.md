@@ -9,6 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 NodeJS - https://nodejs.org/en/download/releases/
+
 Docker - https://www.docker.com/products/docker-desktop
 
 ### Installing
@@ -40,11 +41,25 @@ PASSWORD: dev
 ## Endpoints
 
 * /ping
-Endpoint used to verify if the server is alive. Still requires API key to be completed.
+
+Endpoint used to verify if the server is alive. Requires API key to be completed.
+
 Request body:
 ```
 {
     "apiKey": "SECRET"
+}
+```
+
+* /produce
+
+Endpoint used to produce a new message on the queue. Requires API key to be completed.
+
+Request body:
+```
+{
+    "apiKey": "SECRET",
+    "message": "Message text"
 }
 ```
 
