@@ -40,7 +40,7 @@ PASSWORD: dev
 
 ## Endpoints
 
-* /ping
+### /ping
 
 Endpoint used to verify if the server is alive. Requires API key to be completed.
 
@@ -51,7 +51,7 @@ Request body:
 }
 ```
 
-* /produce
+### /produce
 
 Endpoint used to produce a new message on the queue. Requires API key to be completed.
 
@@ -60,6 +60,28 @@ Request body:
 {
     "apiKey": "SECRET",
     "message": "Message text"
+}
+```
+
+### /consume
+
+Endpoint used to get and consume the first message on the queue. Requires API key to be completed.
+
+Request body:
+```
+{
+    "apiKey": "SECRET"
+}
+```
+
+### /process/<messageId>
+
+Endpoint used to get and consume the first message on the queue. Requires API key to be completed.
+
+Request body:
+```
+{
+    "apiKey": "SECRET"
 }
 ```
 
