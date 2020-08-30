@@ -163,7 +163,7 @@ resources:
     LambdaRolePolicy:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: wonderq-api-lambda-role-${opt:stage}
+        RoleName: wonderq-api-lambda-role-prod
         AssumeRolePolicyDocument:
           Statement:
             - Effect: Allow
@@ -173,7 +173,7 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: wonderq-api-cloudwatch-policy-${opt:stage}
+          - PolicyName: wonderq-api-cloudwatch-policy-prod
             PolicyDocument:
               Statement:
                 - Effect: Allow
@@ -181,7 +181,7 @@ resources:
                   Action:
                     - logs:CreateLogStream
                     - logs:PutLogEvents
-          - PolicyName: wonderq-api-network-policy-${opt:stage}
+          - PolicyName: wonderq-api-network-policy-prod
             PolicyDocument:
               Statement:
                 - Effect: Allow
@@ -191,14 +191,14 @@ resources:
                     - ec2:DetachNetworkInterface
                     - ec2:DeleteNetworkInterface
                   Resource: '*'
-          - PolicyName: wonderq-api-email-policy-${opt:stage}
+          - PolicyName: wonderq-api-email-policy-prod
             PolicyDocument:
               Statement:
                 - Effect: Allow
                   Action:
                     - ses:SendEmail
                   Resource: '*'
-          - PolicyName: wonderq-api-sms-policy-${opt:stage}
+          - PolicyName: wonderq-api-sms-policy-prod
             PolicyDocument:
               Statement:
                 - Effect: Allow
