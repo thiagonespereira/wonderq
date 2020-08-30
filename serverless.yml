@@ -12,9 +12,9 @@ provider:
   vpc:
     securityGroupIds:
       - "Fn::GetAtt": LambdaSecurityGroup.GroupId
-  # SubnetIds:
-  #   - subnet-9dbb57bc
-  #   - subnet-ae0fb9e3
+  SubnetIds:
+    - subnet-0e4a9cc4ed67e4429
+    - subnet-00e507131b5223a1c
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:custom.environments.${self:custom.environments.env}.STAGE}
@@ -92,13 +92,13 @@ resources:
       Type: AWS::EC2::SecurityGroup
       Properties:
         GroupDescription: Security group for wonderq api service.
-        VpcId: vpc-0c00013d888e55127
+        VpcId: vpc-027fe0582cab21a40
     DatabaseSecurityGroup:
       Type: AWS::EC2::SecurityGroup
       DependsOn: LambdaSecurityGroup
       Properties:
         GroupDescription: Security group for wonderq api databases.
-        VpcId: vpc-0c00013d888e55127
+        VpcId: vpc-027fe0582cab21a40
         SecurityGroupIngress:
           - IpProtocol: tcp
             FromPort: 5432
@@ -134,8 +134,8 @@ resources:
         DBSubnetGroupName: PublicDbSubnet
         DBSubnetGroupDescription: PublicDbSubnet
         SubnetIds:
-          - subnet-9dbb57bc
-          - subnet-ae0fb9e3
+          - subnet-0e4a9cc4ed67e4429
+          - subnet-00e507131b5223a1c
     LambdaRolePolicy:
       Type: AWS::IAM::Role
       Properties:
