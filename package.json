@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "tbd"
+    "url": "https://github.com/thiagonespereira/wonderq"
   },
   "keywords": [
     "wonderq",
@@ -42,25 +42,17 @@
     "aws-serverless-express": "^3.3.8",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.0.1",
     "express-validator": "^6.6.0",
-    "fs": "0.0.1-security",
     "joi": "^14.3.1",
     "knex": "^0.21.1",
-    "lodash": "^4.17.15",
     "moment": "^2.27.0",
     "objection": "^2.2.0",
-    "path": "^0.12.7",
     "pg": "^8.2.1",
-    "request-promise": "^4.2.5",
-    "scrypt-js": "^3.0.1",
     "serverless": "^1.73.1",
     "serverless-dotenv-plugin": "^2.4.2",
-    "uniqid": "^5.2.0",
     "use-strict": "^1.0.1",
-    "uuid": "^8.2.0",
     "winston": "^3.3.3"
   }
 }

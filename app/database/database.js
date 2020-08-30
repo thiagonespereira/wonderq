@@ -3,9 +3,6 @@ const database = {
     migrations: {
         directory: 'app/database/migrations',
     },
-    seeds: {
-        directory: 'app/database/seeds',
-    },
     debug: process.env.STAGE === 'dev',
 };
 

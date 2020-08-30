@@ -1,6 +1,5 @@
 // const assert = require('assert')
 const Joi = require('joi');
-const { v1: uuid } = require('uuid');
 
 module.exports = class Message {
     constructor(data) {

@@ -16,16 +16,6 @@ module.exports = class RunMigrations {
         }
     }
 
-    async seed() {
-        Logger.info('Running seed...');
-        const info = await this.knex.seed.run();
-        if (info.length === 0) {
-            Logger.info('No seed files exist');
-        } else {
-            Logger.info(`Seed run: ${info[0].length} migrations \n`);
-        }
-    }
-
     async rollback() {
         Logger.info('Rollback migrations...');
         const info = await this.knex.migrate.rollback();

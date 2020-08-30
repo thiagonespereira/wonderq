@@ -7,6 +7,5 @@ const RunMigrations = require('../database/run_migrations');
 module.exports.handler = async function runMigrationsHandler() {
     const runMigrations = new RunMigrations(knex, true);
     await runMigrations.migrate();
-    // await runMigrations.seed();
     await knex.destroy();
 };

@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const Logger = require('../utils/logger');
 const ForbiddenError = require('../utils/errors/forbidden-error');
+const UnauthorizedError = require('../utils/errors/unauthorized-error');
 
 const app = express();
 
