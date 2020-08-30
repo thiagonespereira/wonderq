@@ -11,7 +11,7 @@ module.exports = {
         'no-restricted-syntax': 'off',
         'no-await-in-loop': 'off',
     },
-    ignorePatterns: ['test/', 'logs/', 'node_modules/'],
+    ignorePatterns: ['__tests__/', 'logs/', 'node_modules/'],
     env: {
         node: true,
         commonjs: true,
