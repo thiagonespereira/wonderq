@@ -62,6 +62,27 @@ Request body:
     "apiKey": "SECRET"
 }
 ```
+#### 200
+
+Response body:
+```
+pong
+```
+
+#### 403 Forbidden
+
+Response body:
+```
+No api key.
+```
+
+#### 401 Unauthorized
+
+Response body:
+```
+Invalid api key.
+```
+
 
 ### /produce
 

@@ -9,7 +9,7 @@ const Ping = (req, res) => {
 const Produce = async (req, res) => {
     if (!req.body.message) {
         Logger.info('No message information.');
-        res.status(403);
+        res.status(400);
         return res.send('No message information.');
     }
 
